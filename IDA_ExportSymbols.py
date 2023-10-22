@@ -21,11 +21,12 @@ def export_filtered_user_defined_symbols_to_csv(csv_filename):
     for name in idautils.Names():
         ea = name[0]
         symbol_name = name[1]
+        symbol_name = symbol_name.replace("_dtor_", "~").replace("_tl_", "<").replace("_tr_", ">")
+        #demangled_name = idc.demangle_name(symbol_name, get_inf_attr(INF_SHORT_DN));
+        if not symbol_name.startswith('_') and not symbol_name.startswith('IA'):
+            symbol_name = symbol_name.replace("__", "::")
         if is_user_defined_symbol(ea) and not should_exclude_symbol(symbol_name):
-            last_updated = str(int(time.time()))
-            last_updated_user = "0"
-
-            data.append([f'{ea-global_offset:08X}', symbol_name, last_updated, last_updated_user])
+            data.append([f'{ea-global_offset:08X}', symbol_name, "0", "0"])
     
     data.sort(key=lambda x: int(x[0], 16))
     
